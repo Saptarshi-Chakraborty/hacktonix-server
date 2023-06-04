@@ -1,0 +1,22 @@
+Here MySQL database is used. There are 3 database tables
+
+database engine used: innoDB
+
+Voter :
+
+fields: 
+     1. id - int(5), AUTO_INCREMENT , Primary Key
+     2. name - varchar(70)
+     3. father_name
+     4. gender
+     5. dob
+     6. address
+     7. dod
+     8. booth
+     9. status
+    10. created_at
+    11. last_edited_at 
+
+Booth :
+
+Option :
