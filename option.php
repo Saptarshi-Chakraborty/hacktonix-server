@@ -19,6 +19,14 @@ switch ($_POST['action']) {
         editOption();
         break;
 
+    case 'allAvailavleOptions';
+        getAllAvailavleOptions();
+        break;
+
+    case 'getOption';
+        getOneOption();
+        break;
+
     default:
         die(json_encode(['status' => 'error', 'type' => 'wrong-request']));
         break;
@@ -52,7 +60,7 @@ function editOption()
 {
     global $G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME, $G_OPTIONS_TABLE;
 
-    if (!isset($_POST['id'])  || !isset($_POST['name']) || !isset($_POST['code'])|| !isset($_POST['status'])) {
+    if (!isset($_POST['id'])  || !isset($_POST['name']) || !isset($_POST['code']) || !isset($_POST['status'])) {
         die(json_encode(['status' => 'error', 'type' => 'parameter-not-found']));
     }
 
@@ -84,12 +92,14 @@ function addOption()
 {
     global $G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME, $G_OPTIONS_TABLE;
 
-    if (!isset($_POST['name']) || !isset($_POST['code']) ) {
+    if (!isset($_POST['name']) || !isset($_POST['code'])) {
         die(json_encode(['status' => 'error', 'type' => 'parameter-not-found']));
     }
 
     $name = $_POST['name'];
     $code = $_POST['code'];
+
+    $code = strtoupper($code);
 
     $conn = mysqli_connect($G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME);
 
@@ -119,4 +129,65 @@ function addOption()
     $id = $firstRow[0];
 
     die(json_encode(['status' => 'success', 'id' => $id]));
+}
+
+
+function getAllAvailavleOptions()
+{
+    global $G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME, $G_OPTIONS_TABLE;
+
+    $conn = mysqli_connect($G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME);
+
+
+    if ($conn == false) {
+        die(json_encode(['status' => 'error', 'type' => 'database']));
+    }
+
+    $query = "SELECT `name`,`code` FROM `{$G_OPTIONS_TABLE}` WHERE `status` = 'active';";
+
+    $result = mysqli_query($conn, $query);
+
+    $numberOfResults = mysqli_num_rows($result);
+    $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // print_r($data);
+
+
+    die(json_encode(['status' => 'success', 'numberOfResults' => $numberOfResults, 'data' => $data]));
+}
+
+function getOneOption()
+{
+    global $G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME, $G_OPTIONS_TABLE;
+
+    if (!isset($_POST['id'])) {
+        die(json_encode(['status' => 'error', 'type' => 'wrong-request']));
+    }
+    
+    $id = $_POST['id'];
+
+    if (!ctype_digit($id)) {
+        die(json_encode(['status' => 'error', 'type' => 'wrong-request', 'msg' => "Parameter is not a number"]));
+    }
+
+    $conn = mysqli_connect($G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME);
+
+    if ($conn == false) {
+        die(json_encode(['status' => 'error', 'type' => 'database']));
+    }
+
+    $query = "SELECT `name`,`code`,`status`,`created_at`,`last_edited_at` FROM `{$G_OPTIONS_TABLE}` WHERE `id` = '$id' ;";
+
+    $result = mysqli_query($conn, $query);
+    $numberOfResults = mysqli_num_rows($result);
+
+    if ($numberOfResults == 0) {
+        die(json_encode(['status' => 'success', 'numberOfResults' => $numberOfResults, 'msg' => "No option found", 'data' => null]));
+    } else if ($numberOfResults > 1) {
+        die(json_encode(['status' => 'error', 'type' => 'server', 'msg' => "Internal Server Error"]));
+    }
+
+    // print_r($data);
+    $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    die(json_encode(['status' => 'success', 'numberOfResults' => $numberOfResults, 'data' => $data]));
 }

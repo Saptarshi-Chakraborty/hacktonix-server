@@ -1,22 +1,102 @@
-Here MySQL database is used. There are 3 database tables
+Here MySQL database is used. 
 
-database engine used: innoDB
+storage engine used: InnoDB
+DATABASE NAME = voteblock
 
-Voter :
+There are 3 database tables
+
+#1 Voter :
 
 fields: 
      1. id - int(5), AUTO_INCREMENT , Primary Key
      2. name - varchar(70)
-     3. father_name
-     4. gender
-     5. dob
-     6. address
-     7. dod
-     8. booth
-     9. status
-    10. created_at
-    11. last_edited_at 
+     3. father_name - varchar(70)
+     4. gender - varchar(5)
+     5. dob - varchar(11)
+     6. address - text
+     7. dod - varchar(11) , DEFAULT "null"
+     8. booth - varchar(10)
+     9. status - enum('active', 'banned', 'dead') , DEFAULT "active"
+    10. created_at - datetime , DEFAULT current_timestamp
+    11. last_edited_at - datetime , DEFAULT current_timestamp
+ 
+    --- SQL_QUERY for Table Creation , MySQL , engine: mariaDB ---
+    CREATE TABLE voter (
+        id int AUTO_INCREMENT,
+        name varchar(70) NOT NULL,
+        father_name varchar(70) NOT NULL,
+        gender varchar(5) NOT NULL,
+        dob varchar(11) NOT NULL,
+        address text NOT NULL,
+        dod varchar(11) NOT NULL DEFAULT "null",
+        booth varchar(10) NOT NULL,
+        status enum('active', 'banned', 'dead') NOT NULL,
+        created_at datetime NOT NULL DEFAULT current_timestamp(),
+        last_edited_at datetime NOT NULL DEFAULT current_timestamp(),
+        PRIMARY KEY(id)
+    );
+    ---
 
-Booth :
+    --- SQL_QUERY for Table Deletion , MySQL , engine: mariaDB ---
+    DROP TABLE voter ;
+    ---
 
-Option :
+
+#2 Booth :
+
+fields: 
+    1. id - int(5), AUTO_INCREMENT , Primary Key
+    2. name - varchar(70)
+    3. code - varchar(10)
+    4. area - varchar(100)
+    5. options - text
+    6. status - enum('active', 'banned', 'inactive')
+    7. created_at - datetime
+    8. last_edited_at - datetime
+
+    --- SQL_QUERY for Table Creation , MySQL , engine: mariaDB ---
+    CREATE TABLE booth (
+        id int AUTO_INCREMENT,
+        name varchar(70) NOT NULL,
+        code varchar(10) NOT NULL,
+        area varchar(100) NOT NULL,
+        options text NOT NULL,
+        status enum('active', 'banned', 'inactive') NOT NULL DEFAULT "active",
+        created_at datetime NOT NULL DEFAULT current_timestamp(),
+        last_edited_at datetime NOT NULL DEFAULT current_timestamp(),
+        PRIMARY KEY(id),
+        UNIQUE(`code`)
+    );
+    ---
+
+    --- SQL_QUERY for Table Deletion , MySQL , engine: mariaDB ---
+    DROP TABLE booth ;
+    ---
+
+
+#3 Option :
+
+fields: 
+    1. id - int(5), AUTO_INCREMENT , Primary Key
+    2. name - varchar(70)
+    3. code - varchar(10)
+    4. status - enum('active', 'banned', 'inactive')
+    5. created_at - datetime
+    6. last_edited_at - datetime
+
+    --- SQL_QUERY for Table Creation , MySQL , engine: mariaDB ---
+    CREATE TABLE options (
+        id int AUTO_INCREMENT,
+        name varchar(70) NOT NULL,
+        code varchar(10) NOT NULL,
+        status enum('active', 'banned', 'inactive') NOT NULL DEFAULT "active",
+        created_at datetime NOT NULL DEFAULT current_timestamp(),
+        last_edited_at datetime NOT NULL DEFAULT current_timestamp(),
+        PRIMARY KEY(id),
+        UNIQUE(`code`)
+    );
+    ---
+
+    --- SQL_QUERY for Table Deletion , MySQL , engine: mariaDB ---
+    DROP TABLE options ;
+    ---
