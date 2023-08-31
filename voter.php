@@ -1,4 +1,6 @@
 <?php
+header("Access-Control-Allow-Origin: *", true);
+
 if ($_SERVER['REQUEST_METHOD'] !== "POST" || !isset($_POST['action'])) {
     die(header("HTTP/1.1 404"));
 }
@@ -6,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] !== "POST" || !isset($_POST['action'])) {
 require_once "./_GLOBAL.php";
 require_once "./utils.php";
 
-header("Access-Control-Allow-Origin: *");
 switch ($_POST['action']) {
     case 'allVoters':
         getAllVoters();

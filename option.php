@@ -4,7 +4,7 @@ if ($_SERVER['REQUEST_METHOD'] !== "POST" || !isset($_POST['action'])) {
 }
 
 require_once "./_GLOBAL.php";
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: *", true);
 
 switch ($_POST['action']) {
     case 'allOptions':

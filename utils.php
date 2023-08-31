@@ -8,10 +8,13 @@ function getVoterQrData(string $id, string $name, string $father_name, string $g
     $data = $id . "," . $name . "," . $father_name . "," . $gender . "," . $dob . ",";
     // echo $data . "\n";
 
-    $keyData = $id . "-" . time();
+    // Generate voter's unique-key for voting with their ID and ENCRYPTION_PASSPHRASE
+    $keyData = $id . "-" . $G_ENCRYPTION_PASSPHRASE;
 
     $uniqueKey = hash("sha1", $keyData);
     $data .= $uniqueKey;
+
+    // $data = $data . "," . hash("sha256", $G_ENCRYPTION_PASSPHRASE);
 
     $encryptedData = null;
     try {
@@ -33,11 +36,10 @@ function validateQrData(string $data)
     try {
         $encryptedData = openssl_decrypt($data, $G_ENCRYPTION_ALGO, $G_ENCRYPTION_PASSPHRASE, 0, $G_ENCRYPTION_IV);
 
-        if ($encryptedData === false)
+        if ($encryptedData === false || strchr($encryptedData, ",") == false)
             return null;
     } catch (\Throwable $error) {
         $ds = $error;
     }
     return $encryptedData;
 }
-
