@@ -66,6 +66,10 @@ if ($voterName != $voter['name'] || $fatherName != $voter['father_name'] || $vot
     $voterDob = $voter['dob'];
 }
 
+$voterImagesString = $voter['images'];
+// now convert the comma seperated string to array
+$voterImages = explode(',', $voterImagesString);
+
 $votingDetails = getVotingDetails($voterId, $voter['booth']);
 // echo json_encode($votingDetails);
 
@@ -83,7 +87,8 @@ die(json_encode([
     'boothCode' => $voter['booth'],
     'boothArea' => $votingDetails['boothArea'],
     'boothStatus' => $votingDetails['status'],
-    'options' => $votingDetails['options']
+    'options' => $votingDetails['options'],
+    'images' => $voterImages,
 ]));
 
 
@@ -100,7 +105,7 @@ function getVoterDetails(string $id)
     }
 
     // Get Voter Booth
-    $query = "SELECT `name`,`father_name`,`gender`,`dob`,`booth`,`status` from `$G_VOTERS_TABLE` WHERE `id` = '$id';";
+    $query = "SELECT `name`,`father_name`,`gender`,`dob`,`booth`,`status`,`images` from `$G_VOTERS_TABLE` WHERE `id` = '$id';";
     $result = mysqli_query($conn, $query);
 
     if ($result === false || mysqli_num_rows($result) != 1) {
