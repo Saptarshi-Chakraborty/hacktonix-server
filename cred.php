@@ -14,17 +14,17 @@ try {
     // var_dump($voterDetails);
 
     if ($voterDetails === null) {
-        die(json_encode(['status' => 'error', 'type' => 'encryption-error']));
+        die(json_encode(['status' => 'error', 'type' => 'encryption-error', 'serial' => 1]));
     }
 
 
     $voterDataArray = explode(',', $voterDetails); //seperates a string by (,) and make an array with each separated part
 
     if (count($voterDataArray) != 6)
-        die(json_encode(['status' => 'error', 'type' => 'encryption-error']));
+        die(json_encode(['status' => 'error', 'type' => 'encryption-error', 'serial' => 2]));
 } catch (\Throwable $th) {
     //throw $th;
-    die(json_encode(['status' => 'error', 'type' => 'encryption-error']));
+    die(json_encode(['status' => 'error', 'type' => 'encryption-error', 'serial' => 3]));
 }
 
 // Seperate all data from the voterDataArray to different variables
@@ -101,7 +101,7 @@ function getVoterDetails(string $id)
     $conn = mysqli_connect($G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME);
 
     if ($conn == false) {
-        die(json_encode(['status' => 'error', 'type' => 'database']));
+        die(json_encode(['status' => 'error', 'type' => 'database', 'serial' => 1]));
     }
 
     // Get Voter Booth
@@ -109,7 +109,7 @@ function getVoterDetails(string $id)
     $result = mysqli_query($conn, $query);
 
     if ($result === false || mysqli_num_rows($result) != 1) {
-        die(json_encode(['status' => 'error', 'type' => 'database']));
+        die(json_encode(['status' => 'error', 'type' => 'database', 'serial' => 2]));
     }
 
     return (mysqli_fetch_all($result, MYSQLI_ASSOC)[0]);
@@ -123,7 +123,7 @@ function getVotingDetails($id, $booth)
     $conn = mysqli_connect($G_DATABSE_HOSTNAME, $G_DATABSE_USERNAME, $G_DATABSE_PASSWORD, $G_DATABSE_DATABASE_NAME);
 
     if ($conn == false) {
-        die(json_encode(['status' => 'error', 'type' => 'database']));
+        die(json_encode(['status' => 'error', 'type' => 'database', 'serial' => 3]));
     }
 
     // Get Booth Details
@@ -131,7 +131,7 @@ function getVotingDetails($id, $booth)
     $result = mysqli_query($conn, $query);
 
     if ($result === false || mysqli_num_rows($result) != 1) {
-        die(json_encode(['status' => 'error', 'type' => 'database']));
+        die(json_encode(['status' => 'error', 'type' => 'database', 'serial' => 4]));
     }
 
     $booth = mysqli_fetch_all($result, MYSQLI_ASSOC)[0];
@@ -158,12 +158,15 @@ function getVotingDetails($id, $booth)
     // echo $query;
 
     $result = mysqli_query($conn, $query);
-    if ($result === false || mysqli_num_rows($result) != $numberOfOptions) {
-        die(json_encode(['status' => 'error', 'type' => 'database']));
+    // print_r($result);
+    // die;
+    if ($result === false  || mysqli_num_rows($result) != $numberOfOptions) {
+        die(json_encode(['status' => 'error', 'type' => 'database', 'serial' => 5]));
     }
 
     $dbValues = mysqli_fetch_all($result, MYSQLI_ASSOC);
     // var_dump($dbValues);
+    // print_r( $allOptionCodes[$i]);
     // die;
     $allOptions = [];
     for ($i = 0; $i < $numberOfOptions; $i++) {
@@ -171,6 +174,8 @@ function getVotingDetails($id, $booth)
 
         array_push($allOptions, $newOption);
     }
+
+    // die(var_dump($allOptionCodes));
 
     return ['status' => $booth['status'], 'boothName' => $booth['name'], 'boothArea' => $booth['area'], 'options' => $allOptions];
 }
